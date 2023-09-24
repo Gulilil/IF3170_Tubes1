@@ -337,7 +337,7 @@ public class OutputFrameController {
      *
      */
     @FXML
-    private void playNewGame() throws IOException{
+    private void playNewGame() throws IOException {
         // Close secondary stage/output frame.
         Stage secondaryStage = (Stage) this.gameBoard.getScene().getWindow();
         secondaryStage.close();
