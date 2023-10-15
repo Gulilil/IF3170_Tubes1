@@ -33,7 +33,7 @@ public class InputFrameController{
     private ComboBox<String> numberOfRounds;
 
     @FXML
-    private ComboBox<Integer> moveOptions;
+    private ComboBox<String> algorithm;
 
 
     /**
@@ -46,8 +46,12 @@ public class InputFrameController{
         ObservableList<String> numberOfRoundsDropdown = FXCollections.observableArrayList(
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
+        ObservableList<String> algolist = FXCollections.observableArrayList(
+                "", "Minimax", "Local", "Genetic", "Randomize");
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
+        this.algorithm.setItems(algolist);
         this.numberOfRounds.getSelectionModel().select(0);
+        this.algorithm.getSelectionModel().select(0);
     }
 
 
@@ -61,7 +65,7 @@ public class InputFrameController{
         this.player1.setText("");
         this.player2.setText("");
         this.numberOfRounds.getSelectionModel().select(0);
-        this.moveOptions.getSelectionModel().select(0);
+        this.algorithm.getSelectionModel().select(0);
     }
 
 
@@ -84,7 +88,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.algorithm.getValue());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -124,6 +128,11 @@ public class InputFrameController{
 
         if (roundNumber.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Number of rounds dropdown menu is blank.").showAndWait();
+            return false;
+        }
+
+        if (this.algorithm.getValue().isEmpty()) {
+            new Alert(Alert.AlertType.ERROR, "Algorithm is blank.").showAndWait();
             return false;
         }
 
