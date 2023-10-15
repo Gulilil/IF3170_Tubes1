@@ -32,6 +32,9 @@ public class InputFrameController{
     @FXML
     private ComboBox<String> numberOfRounds;
 
+    @FXML
+    private ComboBox<Integer> moveOptions;
+
 
     /**
      * Initialize the dropdown ComboBox with a list of items that are allowed to be selected.
@@ -58,6 +61,7 @@ public class InputFrameController{
         this.player1.setText("");
         this.player2.setText("");
         this.numberOfRounds.getSelectionModel().select(0);
+        this.moveOptions.getSelectionModel().select(0);
     }
 
 
