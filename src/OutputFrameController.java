@@ -1,3 +1,7 @@
+import BotMoves.GASearchAlgo;
+import BotMoves.LocalSearchAlgo;
+import BotMoves.MiniMaxABAlgo;
+import BotMoves.RandomizeAlgo;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -69,12 +73,24 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst){
+    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algorithm){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
+
+        int moveOption = 0;
+        if (algorithm.equals("Minimax")) {
+            moveOption = 1;
+        } else if (algorithm.equals("Local")) {
+            moveOption = 2;
+        } else if (algorithm.equals("Genetic")) {
+            moveOption = 3;
+        } else {
+            moveOption = 4;
+        }
+        System.out.println(moveOption);
 
         // Start bot
         this.bot = new Bot();
