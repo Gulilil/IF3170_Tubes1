@@ -90,10 +90,9 @@ public class OutputFrameController {
         } else {
             moveOption = 4;
         }
-        System.out.println(moveOption);
 
         // Start bot
-        this.bot = new Bot();
+        this.bot = new Bot(moveOption);
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();

@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class Bot {
     private final Algorithm typeMove;
+
     // Type Move List:
     // 1 : moveRandomize
     // 2 : moveMiniMaxABPruning
@@ -26,9 +27,19 @@ public class Bot {
             this.typeMove = new RandomizeAlgo();
         }
     }
-
     public int[] move(Button[][] boardMap) {
-        return this.typeMove.move(boardMap);
+        char[][] board = new char[8][8];
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8 ;j++){
+                if(boardMap[i][j].getText().isEmpty()){
+                    board[i][j] = ' ';
+                }else{
+                    board[i][j] = boardMap[i][j].getText().charAt(0);
+                }
+            }
+        }
+        System.out.println("Ini bot move");
+        return this.typeMove.move(board);
     }
 
 }
