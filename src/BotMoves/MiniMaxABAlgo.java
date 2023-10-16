@@ -3,6 +3,7 @@ package BotMoves;
 import javafx.scene.control.Button;
 import DataStructure.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class MiniMaxABAlgo implements Algorithm{
@@ -97,18 +98,18 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     @Override
-    public int[] move(char[][] boardMap, int roundLeft) {
+    public int[] move(char[][] boardMap, int roundleft) {
         this.root = new Tree(boardMap);
 
-        processTree(boardMap, true, 0, 2, -999, 999);
+        Point next = new Point();
 
-        this.root.printTree();
-
-        RandomizeAlgo hehe = new RandomizeAlgo();
-        return hehe.move(boardMap, roundLeft);
+        processTree(boardMap, true, 0, 2, -999, 999, next);
+        System.out.printf(next.x + " " + next.y);
+//        this.root.printTree();
+        return new int[] {next.x, next.y};
     }
 
-    public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta) {
+    public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
         if (leftround > 0) {
             ArrayList<int[]> potentialPoint = searchAdjacent(boardMap);
             for (int[] point: potentialPoint) {
@@ -118,6 +119,13 @@ public class MiniMaxABAlgo implements Algorithm{
                 }
 
                 changeState(state, isBot, point[0], point[1]);
+
+                Point nextpath = new Point(point[0],point[1]);
+                int val = processTree(state, !isBot, depth+1, leftround-1, alpha, beta, nextpath);
+//                for (int p = 0; p < depth; p++) {
+//                    System.out.print("  ");
+//                }
+//                System.out.println(point[0] + " " + point[1]);
 //                for(int i = 0; i < 8; i++) {
 //                    for (int p = 0; p < depth; p++) {
 //                        System.out.print("  ");
@@ -129,26 +137,31 @@ public class MiniMaxABAlgo implements Algorithm{
 //                    System.out.println();
 //                }
 //                System.out.println("-------------------------");
-                int val = processTree(state, !isBot, depth+1, leftround-1, alpha, beta);
-
                 if (isBot && val > alpha) {
                     alpha = val;
+                    if (depth == 0) {
+                        selectedPoint.setLocation(point[0],point[1]);
+                    }
+
                 } else if (!isBot && val < beta) {
                     beta = val;
+                    if (depth == 0) {
+                        selectedPoint.setLocation(point[0],point[1]);
+                    }
                 }
             }
-            for (int p = 0; p < depth; p++) {
-                System.out.print("  ");
-            }
-            System.out.print(isBot + "| ");
-            System.out.println(isBot ? alpha : beta);
+//            for (int p = 0; p < depth; p++) {
+//                System.out.print("  ");
+//            }
+//            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
+//            System.out.println(isBot ? alpha : beta);
             return isBot ? alpha : beta;
         } else { //
-            for (int p = 0; p < depth; p++) {
-                System.out.print("  ");
-            }
-            System.out.print(isBot + "| ");
-            System.out.println(calculateObjective(boardMap));
+//            for (int p = 0; p < depth; p++) {
+//                System.out.print("  ");
+//            }
+//            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
+//            System.out.println(calculateObjective(boardMap));
             return calculateObjective(boardMap);
         }
     }
