@@ -27,7 +27,7 @@ public class Bot {
             this.typeMove = new RandomizeAlgo();
         }
     }
-    public int[] move(Button[][] boardMap) {
+    public int[] move(Button[][] boardMap, int roundLeft) {
         char[][] board = new char[8][8];
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8 ;j++){
@@ -39,7 +39,7 @@ public class Bot {
             }
         }
         System.out.println("Ini bot move");
-        return this.typeMove.move(board);
+        return this.typeMove.move(board, roundLeft);
     }
 
 }

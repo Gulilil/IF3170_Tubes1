@@ -368,7 +368,7 @@ public class OutputFrameController {
     }
 
     private void moveBot() {
-        int[] botMove = this.bot.move(buttons);
+        int[] botMove = this.bot.move(buttons, roundsLeft);
         int i = botMove[0];
         int j = botMove[1];
 

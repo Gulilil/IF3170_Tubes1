@@ -97,7 +97,7 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     @Override
-    public int[] move(char[][] boardMap) {
+    public int[] move(char[][] boardMap, int roundLeft) {
         this.root = new Tree(boardMap);
 
         processTree(boardMap, true, 0, 2, -999, 999);
@@ -105,7 +105,7 @@ public class MiniMaxABAlgo implements Algorithm{
         this.root.printTree();
 
         RandomizeAlgo hehe = new RandomizeAlgo();
-        return hehe.move(boardMap);
+        return hehe.move(boardMap, roundLeft);
     }
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta) {
