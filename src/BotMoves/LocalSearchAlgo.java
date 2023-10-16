@@ -21,7 +21,7 @@ public class LocalSearchAlgo implements Algorithm{
 ////        return countO - countX;
 //    }
     @Override
-    public int[] move(char[][] boardMap) {
+    public int[] move(char[][] boardMap, int roundleft) {
         return new int[] {1,1};
     }
 }
