@@ -22,6 +22,23 @@ public class LocalSearchAlgo implements Algorithm{
         return countO - countX;
     }
 
+    private int countAdjacentEnemies(char[][] boardMap, int[] pos){
+        int count = 0;
+        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == 'X'){
+            count++;
+        }
+        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == 'X'){
+            count++;
+        }
+        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == 'X'){
+            count++;
+        }
+        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == 'X'){
+            count++;
+        }
+        return count;
+    }
+
     private char[][] duplicateBoardAndInsert(char[][] boardMap, int[] pos){
         // Duplicate
         char[][] newMap = new char[8][8];
@@ -86,20 +103,22 @@ public class LocalSearchAlgo implements Algorithm{
         int currentVal = checkBoardValue(boardMap);
         double maxVal = Double.NEGATIVE_INFINITY;
         int[] best = null;
-        int temperature = 500;
+        int temperature = 28;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
-            char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
-            int newVal = checkBoardValue(newBoardMap);
+            if (countAdjacentEnemies(boardMap, newPos) > 0){
+                char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
+                int newVal = checkBoardValue(newBoardMap);
 
-            double prob = moveProbability(newVal-currentVal, temperature);
+                double prob = moveProbability(newVal-currentVal, temperature);
 
-            if (moveSuccess(prob)){
-                current = newPos;
-                currentVal = newVal;
-                if (currentVal > maxVal){
-                    maxVal = currentVal;
-                    best = current;
+                if (moveSuccess(prob)){
+                    current = newPos;
+                    currentVal = newVal;
+                    if (currentVal > maxVal){
+                        maxVal = currentVal;
+                        best = current;
+                    }
                 }
             }
             temperature--;
