@@ -5,6 +5,8 @@ import DataStructure.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class MiniMaxABAlgo implements Algorithm{
     private Tree root;
@@ -96,7 +98,45 @@ public class MiniMaxABAlgo implements Algorithm{
         }
         return point;
     }
-
+    public ArrayList<PointValue> searchPointValue(char[][] boardMap,boolean isBot, ArrayList<int[]>allAdjacent){
+        ArrayList<PointValue>result =new ArrayList<PointValue>();
+        for(int[] point : allAdjacent){
+            int value = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
+            result.add(new PointValue(point[0],point[1],value));
+        }
+//        System.out.println("=========Belum di sort ===========");
+//        for (PointValue pv : result){
+//            pv.display();
+//        }
+//        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
+//        System.out.println("=========Setelah di sort ===========");
+//        for (PointValue pv : result){
+//            pv.display();
+//        }
+        return result;
+    }
+    public int searchTotalAdjacent(char[][] boardMap,boolean isBot ,Point point){
+        char enemy = 'X';
+        if(!isBot){
+            enemy = 'O';
+        }
+        int total = 0;
+        int x = point.x;
+        int y = point.y;
+        if(isValid(x-1,y)&&boardMap[x-1][y] == enemy){
+            total += 1;
+        }
+        if(isValid(x,y-1) && boardMap[x][y-1] == enemy){
+            total += 1;
+        }
+        if(isValid(x+1,y) && boardMap[x+1][y] == enemy){
+            total += 1;
+        }
+        if(isValid(x,y+1)&&boardMap[x][y+1] == enemy){
+            total +=1;
+        }
+        return total;
+    }
     @Override
     public int[] move(char[][] boardMap, int roundLeft) {
         this.root = new Tree(boardMap);
@@ -110,9 +150,11 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
-        if (leftround > 0) {
+        if (leftround > 0 && depth<=2) {
             ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
+            ArrayList<PointValue> testing = searchPointValue(boardMap,isBot,potentialPoint);
             for (int[] point: potentialPoint) {
+                int total_neighbor = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
                 char [][] state = new char[8][];
                 for(int i = 0; i < 8; i++) {
                     state[i] = boardMap[i].clone();
@@ -150,11 +192,11 @@ public class MiniMaxABAlgo implements Algorithm{
                     }
                 }
             }
-//            for (int p = 0; p < depth; p++) {
-//                System.out.print("  ");
-//            }
-//            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
-//            System.out.println(isBot ? alpha : beta);
+            for (int p = 0; p < depth; p++) {
+                System.out.print("  ");
+            }
+            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
+            System.out.println(isBot ? alpha : beta);
             return isBot ? alpha : beta;
         } else { //
 //            for (int p = 0; p < depth; p++) {
