@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 public class InputFrameController{
 
-    public CheckBox isBotFirst;
+    public CheckBox isOFirst;
     @FXML
     private TextField player1;
 
@@ -33,7 +33,13 @@ public class InputFrameController{
     private ComboBox<String> numberOfRounds;
 
     @FXML
-    private ComboBox<String> algorithm;
+    private ComboBox<String> algorithm1;
+
+    @FXML
+    private ComboBox<String> algorithm2;
+
+    @FXML
+    private ComboBox<Integer> delay;
 
 
     /**
@@ -47,11 +53,20 @@ public class InputFrameController{
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
         ObservableList<String> algolist = FXCollections.observableArrayList(
-                "", "Minimax", "Local", "Genetic", "Randomize");
+                "Human", "Bot Minimax Algo", "Bot Simulated Annealing", "Bot Genetic Algo", "Bot Randomize Algo");
+        ObservableList<Integer> delayTimeList = FXCollections.observableArrayList(
+                0, 250, 500, 1000, 1250, 1500);
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
-        this.algorithm.setItems(algolist);
-        this.numberOfRounds.getSelectionModel().select(0);
-        this.algorithm.getSelectionModel().select(0);
+        this.algorithm1.setItems(algolist);
+        this.algorithm2.setItems(algolist);
+        this.delay.setItems(delayTimeList);
+
+        this.player1.setText("Player X");
+        this.player2.setText("Player O");
+        this.numberOfRounds.getSelectionModel().select(7);
+        this.algorithm1.getSelectionModel().select(0);
+        this.algorithm2.getSelectionModel().select(0);
+        this.delay.getSelectionModel().select(0);
     }
 
 
@@ -62,10 +77,12 @@ public class InputFrameController{
      */
     @FXML
     private void reset(){
-        this.player1.setText("");
-        this.player2.setText("");
-        this.numberOfRounds.getSelectionModel().select(0);
-        this.algorithm.getSelectionModel().select(0);
+        this.player1.setText("Player X");
+        this.player2.setText("Player O");
+        this.numberOfRounds.getSelectionModel().select(7);
+        this.algorithm1.getSelectionModel().select(0);
+        this.algorithm2.getSelectionModel().select(0);
+        this.delay.getSelectionModel().select(0);
     }
 
 
@@ -88,7 +105,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.algorithm.getValue());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isOFirst.isSelected(), this.algorithm1.getValue(), this.algorithm2.getValue(), this.delay.getValue());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -131,10 +148,16 @@ public class InputFrameController{
             return false;
         }
 
-        if (this.algorithm.getValue().isEmpty()) {
-            new Alert(Alert.AlertType.ERROR, "Algorithm is blank.").showAndWait();
+        if (this.algorithm1.getValue().isEmpty()) {
+            new Alert(Alert.AlertType.ERROR, "The type for Player X is blank.").showAndWait();
             return false;
         }
+
+        if (this.algorithm2.getValue().isEmpty()) {
+            new Alert(Alert.AlertType.ERROR, "The type for Player O is blank.").showAndWait();
+            return false;
+        }
+
 
         return true;
     }

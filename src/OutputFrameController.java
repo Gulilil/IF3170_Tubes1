@@ -2,6 +2,7 @@ import BotMoves.GASearchAlgo;
 import BotMoves.LocalSearchAlgo;
 import BotMoves.MiniMaxABAlgo;
 import BotMoves.RandomizeAlgo;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,6 +17,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -53,8 +55,11 @@ public class OutputFrameController {
     private int playerXScore;
     private int playerOScore;
     private int roundsLeft;
-    private boolean isBotFirst;
-    private Bot bot;
+    private boolean isOFirst;
+    private Bot botX;
+    private Bot botO;
+
+    private int delay;
 
 
     private static final int ROW = 8;
@@ -70,32 +75,55 @@ public class OutputFrameController {
      * @param name1 Name of Player 1 (Player).
      * @param name2 Name of Player 2 (Bot).
      * @param rounds The number of rounds chosen to be played.
-     * @param isBotFirst True if bot is first, false otherwise.
+     * @param isOFirst True if player O is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algorithm){
+    void getInput(String name1, String name2, String rounds, boolean isOFirst, String algorithm1, String algorithm2, int delay){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
-        this.isBotFirst = isBotFirst;
+        this.isOFirst = isOFirst;
 
-        int moveOption = 0;
-        if (algorithm.equals("Minimax")) {
-            moveOption = 1;
-        } else if (algorithm.equals("Local")) {
-            moveOption = 2;
-        } else if (algorithm.equals("Genetic")) {
-            moveOption = 3;
+        // List : "Human", "Bot Minimax", "Bot Simulated Annealing", "Bot Genetic", "Bot Randomize"
+        if (!algorithm1.equals("Human")){
+            int optionBot1 = 0;
+            if (algorithm1.equals("Bot Minimax Algo")) {
+                optionBot1 = 1;
+            } else if (algorithm1.equals("Bot Simulated Annealing")) {
+                optionBot1 = 2;
+            } else if (algorithm1.equals("Bot Genetic Algo")) {
+                optionBot1 = 3;
+            } else {
+                optionBot1 = 4;
+            }
+            this.botX = new Bot(optionBot1, 'X', 'O');
         } else {
-            moveOption = 4;
+            this.botX = null;
         }
 
-        // Start bot
-        this.bot = new Bot(moveOption);
-        this.playerXTurn = !isBotFirst;
-        if (this.isBotFirst) {
-            this.moveBot();
+        if (!algorithm2.equals("Human")){
+            int optionBot2 = 0;
+            if (algorithm2.equals("Bot Minimax Algo")) {
+                optionBot2 = 1;
+            } else if (algorithm2.equals("Bot Simulated Annealing")) {
+                optionBot2 = 2;
+            } else if (algorithm2.equals("Bot Genetic Algo")) {
+                optionBot2 = 3;
+            } else {
+                optionBot2 = 4;
+            }
+            this.botO = new Bot(optionBot2, 'O', 'X');
+        } else {
+            this.botO = null;
+        }
+
+        this.delay = delay;
+        this.playerXTurn = !isOFirst;
+        if (isOFirst){
+            this.movePlayerO();
+        } else {
+            this.movePlayerX();
         }
     }
 
@@ -171,7 +199,7 @@ public class OutputFrameController {
         this.playerXScoreLabel.setText("4");
         this.playerOScoreLabel.setText("4");
 
-        this.playerXTurn = true;
+        this.playerXTurn = !isOFirst;
         this.playerXScore = 4;
         this.playerOScore = 4;
     }
@@ -191,47 +219,71 @@ public class OutputFrameController {
             new Alert(Alert.AlertType.ERROR, "Invalid coordinates: Try again!").showAndWait();
         // Button must be blank.
         else {
-            if (this.playerXTurn) {
-                // Changed background color to green to indicate next player's turn.
-                this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
-                this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
-                this.buttons[i][j].setText("X");  // Mark the board with X.
-                this.playerXScore++;              // Increment the score of player X.
+                if (this.playerXTurn) {
+                    // Changed background color to green to indicate next player's turn.
+                    this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                    this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                    this.buttons[i][j].setText("X");  // Mark the board with X.
+                    this.playerXScore++;              // Increment the score of player X.
 
-                // Update game board by changing surrounding cells to X if applicable.
-                this.updateGameBoard(i, j);
-                this.playerXTurn = false;         // Alternate player's turn.
+                    // Update game board by changing surrounding cells to X if applicable.
+                    this.updateGameBoard(i, j);
 
-                if (isBotFirst) {
-                    this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
-                    this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                    if (isOFirst) {
+                        this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
+                        this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                    }
+
+                }
+                else {
+                    this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                    this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                    this.buttons[i][j].setText("O");
+                    this.playerOScore++;
+
+                    this.updateGameBoard(i, j);
+
+                    if (!isOFirst) {
+                        this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
+                        this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                    }
+
                 }
 
-                if (isBotFirst && this.roundsLeft == 0) {
+            if (this.botO != null && this.botX != null){
+                // Delay is only implemented if there is no human player
+                PauseTransition pause = new PauseTransition(Duration.millis(delay));
+                pause.setOnFinished(event -> {
+                    if (this.roundsLeft != 0){
+                        this.nextPlayerMove();
+                    } else {
+                        pause.stop();
+                        this.endOfGame();
+                    }
+                });
+                pause.play();
+            } else {
+                // Proceed to continue the game otherwise
+                if (this.roundsLeft == 0){
                     this.endOfGame();
+                } else {
+                    this.nextPlayerMove();
                 }
 
-                // Bot's turn
-                this.moveBot();
             }
-            else {
-                this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
-                this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
-                this.buttons[i][j].setText("O");
-                this.playerOScore++;
+        }
+    }
 
-                this.updateGameBoard(i, j);
-                this.playerXTurn = true;
-
-                if (!isBotFirst) {
-                    this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
-                    this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
-                }
-
-                if (!isBotFirst && this.roundsLeft == 0) { // Game has terminated.
-                    this.endOfGame();       // Determine & announce the winner.
-                }
-            }
+    private void nextPlayerMove(){
+        if (playerXTurn) {
+            // Change turn to Player O
+            this.playerXTurn = false;         // Alternate player's turn.
+            this.movePlayerO();
+        }
+        else {
+            // Change turn to Player X
+            this.playerXTurn = true;
+            this.movePlayerX();
         }
     }
 
@@ -307,7 +359,7 @@ public class OutputFrameController {
         // Player X is the winner.
         if (this.playerXScore > this.playerOScore) {
             new Alert(Alert.AlertType.INFORMATION,
-                    this.playerXName.getText() + " has won the game!").showAndWait();
+                    this.playerXName.getText() + " has won the game!").show();
             this.playerXBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
             this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
             this.playerXName.setText(this.playerXName.getText() + " (Winner!)");
@@ -316,7 +368,7 @@ public class OutputFrameController {
         // Player O is the winner,
         else if (this.playerOScore > this.playerXScore) {
             new Alert(Alert.AlertType.INFORMATION,
-                    this.playerOName.getText() + " has won the game!").showAndWait();
+                    this.playerOName.getText() + " has won the game!").show();
             this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
             this.playerOBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
             this.playerOName.setText(this.playerOName.getText() + " (Winner!)");
@@ -325,7 +377,7 @@ public class OutputFrameController {
         // Player X and Player O tie.
         else {
             new Alert(Alert.AlertType.INFORMATION,
-                    this.playerXName.getText() + " and " + this.playerOName.getText() + " have tied!").showAndWait();
+                    this.playerXName.getText() + " and " + this.playerOName.getText() + " have tied!").show();
             this.playerXBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
             this.playerOBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
         }
@@ -367,17 +419,34 @@ public class OutputFrameController {
         primaryStage.show();
     }
 
-    private void moveBot() {
-        int[] botMove = this.bot.move(buttons, this.roundsLeft * 2);
-        int i = botMove[0];
-        int j = botMove[1];
+    private void movePlayerX(){
+        if (this.botX != null){
+            int[] botXMove = this.botX.move(buttons, this.roundsLeft);
+            int i = botXMove[0];
+            int j = botXMove[1];
 
-        if (!this.buttons[i][j].getText().equals("")) {
-            new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-            System.exit(1);
-            return;
+            if (!this.buttons[i][j].getText().equals("")) {
+                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                System.exit(1);
+                return;
+            }
+            this.selectedCoordinates(i, j);
         }
-
-        this.selectedCoordinates(i, j);
     }
+
+    private void movePlayerO(){
+        if (this.botO != null){
+            int[] botOMove = this.botO.move(buttons, this.roundsLeft);
+            int i = botOMove[0];
+            int j = botOMove[1];
+
+            if (!this.buttons[i][j].getText().equals("")) {
+                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                System.exit(1);
+                return;
+            }
+            this.selectedCoordinates(i, j);
+        }
+    }
+
 }

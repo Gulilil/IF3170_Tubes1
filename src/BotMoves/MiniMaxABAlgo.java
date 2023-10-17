@@ -98,12 +98,12 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     @Override
-    public int[] move(char[][] boardMap, int roundLeft) {
+    public int[] move(char[][] boardMap, int roundLeft, char selfMark, char enemyMark) {
         this.root = new Tree(boardMap);
 
         Point next = new Point();
 
-        processTree(boardMap, true, 0, roundLeft, -999, 999, next);
+        processTree(boardMap, true, 0, roundLeft * 2, -999, 999, next);
         System.out.printf(next.x + " " + next.y);
 //        this.root.printTree();
         return new int[] {next.x, next.y};

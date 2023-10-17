@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class Bot {
     private final Algorithm typeMove;
+    private char selfMark;
+    private char enemyMark;
 
     // Type Move List:
     // 1 : moveRandomize
@@ -12,11 +14,8 @@ public class Bot {
     // 3 : moveLocalSearch
     // 4 : moveGASearch
 
-    public Bot(){
-        this.typeMove = new RandomizeAlgo();
-    }
 
-    public Bot(int moveOption){
+    public Bot(int moveOption, char selfMark, char enemyMark){
         if (moveOption == 1){
             this.typeMove = new MiniMaxABAlgo();
         } else if (moveOption == 2){
@@ -26,6 +25,9 @@ public class Bot {
         } else {
             this.typeMove = new RandomizeAlgo();
         }
+
+        this.selfMark = selfMark;
+        this.enemyMark = enemyMark;
     }
     public int[] move(Button[][] boardMap, int roundLeft) {
         char[][] board = new char[8][8];
@@ -39,7 +41,7 @@ public class Bot {
             }
         }
         System.out.println("Ini bot move");
-        return this.typeMove.move(board, roundLeft);
+        return this.typeMove.move(board, roundLeft, this.selfMark, this.enemyMark);
     }
 
 }
