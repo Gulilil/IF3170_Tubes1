@@ -5,7 +5,9 @@ import DataStructure.Tree;
 import javafx.scene.control.Button;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GASearchAlgo implements Algorithm{
 
@@ -63,16 +65,20 @@ public class GASearchAlgo implements Algorithm{
         return point;
     }
 
-    public ArrayList<int[]> searchAdjacent(char[][] boardMap, boolean isBot) {
+    public ArrayList<PointValue> searchAdjacent(char[][] boardMap, boolean isBot) {
         ArrayList<int[]> point = new ArrayList<int[]>();
+        ArrayList<PointValue> pointValues = new ArrayList<PointValue>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (boardMap[i][j] == ' ' && isAdjacent(boardMap, i, j, isBot)) {
-                    point.add(new int[] {i, j});
+                int val = searchTotalAdjacent(boardMap,isBot,new Point(i,j));
+//                Memastikan bahwa boardMap[i][j] kosong dan memiliki tetangga berupa musuh
+                if (boardMap[i][j] == ' ' && val > 0) {
+                    pointValues.add(new PointValue(i,j,val));
                 }
             }
         }
-        return point;
+        pointValues.sort(Comparator.comparing(PointValue::getPointValue).reversed());
+        return pointValues;
     }
     public ArrayList<PointValue> searchPointValue(char[][] boardMap, boolean isBot, ArrayList<int[]>allAdjacent){
         ArrayList<PointValue>result =new ArrayList<PointValue>();
@@ -80,15 +86,14 @@ public class GASearchAlgo implements Algorithm{
             int value = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
             result.add(new PointValue(point[0],point[1],value));
         }
-//        System.out.println("=========Belum di sort ===========");
-//        for (PointValue pv : result){
-//            pv.display();
-//        }
-//        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
-//        System.out.println("=========Setelah di sort ===========");
-//        for (PointValue pv : result){
-//            pv.display();
-//        }
+        System.out.println("=========Belum di sort ===========");
+        for (PointValue pv : result){
+            pv.display();
+        }
+        System.out.println("=========Setelah di sort ===========");
+        for (PointValue pv : result){
+            pv.display();
+        }
         return result;
     }
     public int searchTotalAdjacent(char[][] boardMap,boolean isBot ,Point point){
@@ -131,8 +136,8 @@ public class GASearchAlgo implements Algorithm{
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
         if (leftround > 0 && depth <= this.maxDepth) {
-            ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
-            ArrayList<PointValue> pointValues = searchPointValue(boardMap,isBot,potentialPoint);
+            ArrayList<PointValue> pointValues = searchAdjacent(boardMap, isBot);
+//            ArrayList<PointValue> pointValues = searchPointValue(boardMap,isBot,potentialPoint);
             int maxIteration = (int) Math.ceil(pointValues.size() * this.maxWidth);
             for(int z = 0; z < maxIteration;z++ ){
                 PointValue pointValue = pointValues.get(z);

@@ -105,15 +105,8 @@ public class MiniMaxABAlgo implements Algorithm{
             int value = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
             result.add(new PointValue(point[0],point[1],value));
         }
-//        System.out.println("=========Belum di sort ===========");
-//        for (PointValue pv : result){
-//            pv.display();
-//        }
-//        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
-//        System.out.println("=========Setelah di sort ===========");
-//        for (PointValue pv : result){
-//            pv.display();
-//        }
+
+        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
         return result;
     }
     public int searchTotalAdjacent(char[][] boardMap,boolean isBot ,Point point){
