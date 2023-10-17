@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class GASearchAlgo implements Algorithm{
 
@@ -15,6 +16,7 @@ public class GASearchAlgo implements Algorithm{
     private int maxDepth;
     private Double maxWidth;
     private int round;
+    private long startTime;
     public boolean isValid(int x, int y){
         if(x >= 0 && x < 8 && y>= 0 && y < 8){
             return true;
@@ -84,7 +86,7 @@ public class GASearchAlgo implements Algorithm{
 //        for (PointValue pv : result){
 //            pv.display();
 //        }
-//        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
+        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
 //        System.out.println("=========Setelah di sort ===========");
 //        for (PointValue pv : result){
 //            pv.display();
@@ -121,6 +123,8 @@ public class GASearchAlgo implements Algorithm{
         this.maxDepth = 4;
         this.maxWidth = 0.8;
         this.round = roundLeft;
+        this.startTime = System.currentTimeMillis();
+
         Point next = new Point();
 
         processTree(boardMap, true, 0, roundLeft * 2, -999, 999, next);
@@ -130,6 +134,9 @@ public class GASearchAlgo implements Algorithm{
     }
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
+        if(System.currentTimeMillis() - this.startTime >5000){
+            return calculateObjective(boardMap);
+        }
         if (leftround > 0 && depth <= this.maxDepth) {
             ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
             ArrayList<PointValue> pointValues = searchPointValue(boardMap,isBot,potentialPoint);
