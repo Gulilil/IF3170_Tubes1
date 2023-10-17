@@ -152,24 +152,23 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
-        if (leftround > 0 && depth<=2) {
+        if (leftround > 0 && depth <= 8) {
             ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
-            ArrayList<PointValue> testing = searchPointValue(boardMap,isBot,potentialPoint);
-            for (int[] point: potentialPoint) {
-                int total_neighbor = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
+            ArrayList<PointValue> pointValues = searchPointValue(boardMap,isBot,potentialPoint);
+            int maxIteration = (int) Math.ceil(pointValues.size() * 0.5);
+            for(int z = 0; z < maxIteration;z++ ){
+                PointValue pointValue = pointValues.get(z);
                 char [][] state = new char[8][];
                 for(int i = 0; i < 8; i++) {
                     state[i] = boardMap[i].clone();
                 }
-
-                changeState(state, isBot, point[0], point[1]);
-
-                Point nextpath = new Point(point[0],point[1]);
-                int val = processTree(state, !isBot, depth+1, leftround-1, alpha, beta, nextpath);
+                changeState(state, isBot, pointValue.getPoint().x, pointValue.getPoint().y);
+                Point nextPath = new Point(pointValue.getPoint());
+                int val = processTree(state, !isBot, depth+1, leftround-1, alpha, beta, nextPath);
 //                for (int p = 0; p < depth; p++) {
 //                    System.out.print("  ");
 //                }
-//                System.out.println(point[0] + " " + point[1]);
+//                System.out.println(pointValue.getPoint().x + " " + pointValue.getPoint().y);
 //                for(int i = 0; i < 8; i++) {
 //                    for (int p = 0; p < depth; p++) {
 //                        System.out.print("  ");
@@ -184,28 +183,19 @@ public class MiniMaxABAlgo implements Algorithm{
                 if (isBot && val > alpha) {
                     alpha = val;
                     if (depth == 0) {
-                        selectedPoint.setLocation(point[0],point[1]);
+                        selectedPoint.setLocation(pointValue.getPoint().x,pointValue.getPoint().y);
                     }
 
                 } else if (!isBot && val < beta) {
                     beta = val;
                     if (depth == 0) {
-                        selectedPoint.setLocation(point[0],point[1]);
+                        selectedPoint.setLocation(pointValue.getPoint().x,pointValue.getPoint().y);
                     }
                 }
             }
-            for (int p = 0; p < depth; p++) {
-                System.out.print("  ");
-            }
-            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
-            System.out.println(isBot ? alpha : beta);
             return isBot ? alpha : beta;
-        } else { //
-//            for (int p = 0; p < depth; p++) {
-//                System.out.print("  ");
-//            }
-//            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
-//            System.out.println(calculateObjective(boardMap));
+
+        } else {
             return calculateObjective(boardMap);
         }
     }
