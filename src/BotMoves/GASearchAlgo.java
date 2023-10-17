@@ -71,14 +71,24 @@ public class GASearchAlgo implements Algorithm{
         ArrayList<PointValue> pointValues = new ArrayList<PointValue>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                int val = searchTotalAdjacent(boardMap,isBot,new Point(i,j));
+                int totalAdj = searchTotalAdjacent(boardMap,isBot,new Point(i,j));
+                int totalDia = searchDiagonal(boardMap, isBot, new Point(i,j));
+                int val = 2*totalAdj - totalDia ;
 //                Memastikan bahwa boardMap[i][j] kosong dan memiliki tetangga berupa musuh
-                if (boardMap[i][j] == ' ' && val > 0) {
+                if (boardMap[i][j] == ' ' && totalAdj > 0) {
                     pointValues.add(new PointValue(i,j,val));
                 }
             }
         }
+//        System.out.println("=========Belum di sort ===========");
+//        for (PointValue pv : pointValues){
+//            pv.display();
+//        }
         pointValues.sort(Comparator.comparing(PointValue::getPointValue).reversed());
+//        System.out.println("=========Setelah di sort ===========");
+//        for (PointValue pv : pointValues){
+//            pv.display();
+//        }
         return pointValues;
     }
     public ArrayList<PointValue> searchPointValue(char[][] boardMap, boolean isBot, ArrayList<int[]>allAdjacent){
@@ -106,17 +116,56 @@ public class GASearchAlgo implements Algorithm{
         int total = 0;
         int x = point.x;
         int y = point.y;
+        // left
         if(isValid(x-1,y)&&boardMap[x-1][y] == enemy){
             total += 1;
         }
+        // down
         if(isValid(x,y-1) && boardMap[x][y-1] == enemy){
             total += 1;
         }
+        // right
         if(isValid(x+1,y) && boardMap[x+1][y] == enemy){
             total += 1;
         }
+        // up
         if(isValid(x,y+1)&&boardMap[x][y+1] == enemy){
             total +=1;
+        }
+        return total;
+    }
+
+    public int searchDiagonal(char[][] boardMap,boolean isBot ,Point point){
+        char self = this.selfMark;
+        if(!isBot){
+            self = this.enemyMark;
+        }
+        int total = 0;
+        int x = point.x;
+        int y = point.y;
+        if(isValid(x-1,y-1)&&boardMap[x-1][y-1] == self){
+            // left and down
+            if((isValid(x-1,y)&&boardMap[x-1][y] == ' ')||(isValid(x,y-1) && boardMap[x][y-1] == ' ')){
+                total += 1;
+            }
+        }
+        else if(isValid(x+1,y-1) && boardMap[x+1][y-1] == self){
+            // right and down
+            if((isValid(x+1,y)&&boardMap[x+1][y] == ' ') || (isValid(x,y-1) && boardMap[x][y-1] == ' ')){
+                total += 1;
+            }
+        }
+        else if(isValid(x+1,y+1) && boardMap[x+1][y+1] == self){
+            // right and up
+            if((isValid(x+1,y)&&boardMap[x+1][y] == ' ' )||( isValid(x,y+1) && boardMap[x][y+1] == ' ')){
+                total += 1;
+            }
+        }
+        else if(isValid(x-1,y+1)&&boardMap[x-1][y+1] == self){
+            // left and up
+            if((isValid(x-1,y)&&boardMap[x-1][y] == ' ')||(isValid(x,y+1) && boardMap[x][y+1] == ' ')){
+                total += 1;
+            }
         }
         return total;
     }
@@ -125,8 +174,8 @@ public class GASearchAlgo implements Algorithm{
         this.root = new Tree(boardMap);
         this.selfMark = selfMark;
         this.enemyMark = enemyMark;
-        this.maxDepth = 4;
-        this.maxWidth = 0.8;
+        this.maxDepth = 8;
+        this.maxWidth = 0.5;
         this.round = roundLeft;
         this.startTime = System.currentTimeMillis();
 
@@ -154,10 +203,6 @@ public class GASearchAlgo implements Algorithm{
                 }
                 changeState(state, isBot, pointValue.getPoint().x, pointValue.getPoint().y);
                 Point nextPath = new Point(pointValue.getPoint());
-                if ((round - leftround/2) >4 && this.maxDepth==4){
-                    this.maxDepth = 8;
-                    this.maxWidth = 0.5;
-                }
                 int val = processTree(state, !isBot, depth+1, leftround-1, alpha, beta, nextPath);
 //                for (int p = 0; p < depth; p++) {
 //                    System.out.print("  ");
