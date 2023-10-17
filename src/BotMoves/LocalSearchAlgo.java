@@ -73,12 +73,12 @@ public class LocalSearchAlgo implements Algorithm{
         return currentMove;
     }
 
-    private double moveProbability(int valueDiff, int t){
+    private double moveProbability(int valueDiff, double t){
         if (valueDiff > 1){
 //            System.out.println("Optimal");
             return 1;
         } else {
-            return Math.exp( (double) (valueDiff-1)/ (double) t);
+            return Math.exp( (double) (valueDiff-1)/  t);
         }
     }
 
@@ -101,9 +101,7 @@ public class LocalSearchAlgo implements Algorithm{
     public int[] move(char[][] boardMap, int roundLeft) {
         int[] current = null;
         int currentVal = checkBoardValue(boardMap);
-        double maxVal = Double.NEGATIVE_INFINITY;
-        int[] best = null;
-        int temperature = 28;
+        double temperature = 10;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
             if (countAdjacentEnemies(boardMap, newPos) > 0){
@@ -113,16 +111,13 @@ public class LocalSearchAlgo implements Algorithm{
                 double prob = moveProbability(newVal-currentVal, temperature);
 
                 if (moveSuccess(prob)){
+                    System.out.println(newPos[0] + " " + newPos[1] + " " + newVal);
                     current = newPos;
                     currentVal = newVal;
-                    if (currentVal > maxVal){
-                        maxVal = currentVal;
-                        best = current;
-                    }
                 }
             }
-            temperature--;
+            temperature -= 0.1;
         }
-        return best;
+        return current;
     }
 }

@@ -43,28 +43,28 @@ public class MiniMaxABAlgo implements Algorithm{
         }
         return false;
     }
-    public boolean isAdjacent(char[][] boardMap, int x, int y){
+    public boolean isAdjacent(char[][] boardMap, int x, int y, boolean isBot){
 //        Cek apakah sebuah point memiliki tetangga
         if(isValid(x-1,y)){
-            if (boardMap[x-1][y] != ' ') {
+            if (boardMap[x-1][y] == (isBot ? 'X' : 'O')) {
                 return true;
             }
         }
 
         if(isValid(x,y-1)){
-            if (boardMap[x][y-1] != ' ') {
+            if (boardMap[x][y-1] == (isBot ? 'X' : 'O')) {
                 return true;
             }
         }
 
         if(isValid(x+1,y)){
-            if (boardMap[x+1][y] != ' ') {
+            if (boardMap[x+1][y] == (isBot ? 'X' : 'O')) {
                 return true;
             }
         }
 
         if(isValid(x,y+1)){
-            if (boardMap[x][y+1] != ' ') {
+            if (boardMap[x][y+1] == (isBot ? 'X' : 'O')) {
                 return true;
             }
         }
@@ -85,11 +85,11 @@ public class MiniMaxABAlgo implements Algorithm{
         return point;
     }
 
-    public ArrayList<int[]> searchAdjacent(char[][] boardMap) {
+    public ArrayList<int[]> searchAdjacent(char[][] boardMap, boolean isBot) {
         ArrayList<int[]> point = new ArrayList<int[]>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (boardMap[i][j] == ' ' && isAdjacent(boardMap, i, j)) {
+                if (boardMap[i][j] == ' ' && isAdjacent(boardMap, i, j, isBot)) {
                     point.add(new int[] {i, j});
                 }
             }
@@ -98,12 +98,12 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     @Override
-    public int[] move(char[][] boardMap, int roundleft) {
+    public int[] move(char[][] boardMap, int roundLeft) {
         this.root = new Tree(boardMap);
 
         Point next = new Point();
 
-        processTree(boardMap, true, 0, 2, -999, 999, next);
+        processTree(boardMap, true, 0, roundLeft, -999, 999, next);
         System.out.printf(next.x + " " + next.y);
 //        this.root.printTree();
         return new int[] {next.x, next.y};
@@ -111,7 +111,7 @@ public class MiniMaxABAlgo implements Algorithm{
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
         if (leftround > 0) {
-            ArrayList<int[]> potentialPoint = searchAdjacent(boardMap);
+            ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
             for (int[] point: potentialPoint) {
                 char [][] state = new char[8][];
                 for(int i = 0; i < 8; i++) {
