@@ -59,7 +59,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
 
     private double moveProbability(double valueDiff, double t){
         if (valueDiff > 1){
-//            System.out.println("Optimal");
             return 1;
         } else {
             return Math.exp( (double) (valueDiff-1)/  t);
@@ -76,7 +75,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
     }
 
     private boolean moveSuccess(double probability){
-//        System.out.println(probability);
         Random rd = new Random();
         double res = rd.nextDouble();
         return res < probability;
@@ -87,17 +85,21 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         this.selfMark = selfMark;
         this.enemyMark = enemyMark;
         int[] current = null;
+        int[] tempTile = null;
         double currentVal = calculateObjective(boardMap);
         double temperature = 10;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
+            if (countAdjacentOfMark(boardMap, newPos, this.enemyMark) == 0){
+                tempTile = newPos;
+            }
             if (countAdjacentOfMark(boardMap, newPos, this.enemyMark) > 0){
                 char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
                 double newVal = calculateObjective(newBoardMap);
 
-//                if (!potentialTakenHeuristics(boardMap, newPos)) {
-//                    newVal +=0.5;
-//                }
+                if (!potentialTakenHeuristics(boardMap, newPos)) {
+                    newVal +=0.5;
+                }
 
                 double prob = moveProbability(newVal-currentVal, temperature);
 
@@ -109,7 +111,11 @@ public class SimulatedAnnealingAlgo implements Algorithm{
             }
             temperature -= 0.1;
         }
-        return current;
+        if (current == null){
+            return tempTile;
+        } else {
+            return current;
+        }
     }
 
     private int countAdjacentOfMark(char[][] boardMap, int[] pos, char mark){
