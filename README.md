@@ -55,12 +55,16 @@ git clone https://github.com/Gulilil/IF3170_Tubes1.git
 ## **Implementation Screenshot**
 ### User Input Screen
 <img src="screenshots/Input.jpg">
+
 ### Game Screen
 <img src="screenshots/Game.jpg">
+
 ### End Game: X Player as the Winner
 <img src="screenshots/End_XWinner.jpg">
+
 ### End Game: O Player as the Winner
 <img src="screenshots/End_OWinner.jpg">
+
 ### End Game: Tied
 <img src="screenshots/End_Tied.jpg">
 
