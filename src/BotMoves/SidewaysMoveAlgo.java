@@ -14,13 +14,18 @@ public class SidewaysMoveAlgo implements Algorithm{
 
         ArrayList<int[]> emptyArr = getEmptyTiles(boardMap);
 
-        int maxVal = calculateObjective(boardMap);
+        double maxVal = calculateObjective(boardMap);
         int[] resTile = null;
         for (int[] tile: emptyArr) {
-            if (countAdjacentEnemies(boardMap, tile) > 0){
+            if (countAdjacentOfMark(boardMap, tile, this.enemyMark) > 0){
                 char[][] newBoard = duplicateBoardAndInsert(boardMap, tile);
-                int currentVal = calculateObjective(newBoard);
+                double currentVal = calculateObjective(newBoard);
+
+//                if (!potentialTakenHeuristics(boardMap, tile)){
+//                    currentVal += 0.5;
+//                }
                 if (currentVal >= maxVal){
+                    System.out.println("SM construct: " + tile[0] + " " + tile[1] + ", Val: " + currentVal);
                     resTile = tile;
                     maxVal = currentVal;
                 }
@@ -69,7 +74,7 @@ public class SidewaysMoveAlgo implements Algorithm{
         }
 
         // Insert
-        newMap[pos[0]][pos[1]] = 'O';
+        newMap[pos[0]][pos[1]] = this.selfMark;
         if (pos[0] != 0 && newMap[pos[0]-1][pos[1]] == this.enemyMark){
             newMap[pos[0]-1][pos[1]] = this.selfMark;
         }
@@ -85,20 +90,37 @@ public class SidewaysMoveAlgo implements Algorithm{
         return newMap;
     }
 
-    private int countAdjacentEnemies(char[][] boardMap, int[] pos){
+    private int countAdjacentOfMark(char[][] boardMap, int[] pos, char mark){
         int count = 0;
-        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == this.enemyMark){
+        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == mark){
             count++;
         }
-        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == this.enemyMark){
+        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == mark){
             count++;
         }
-        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == this.enemyMark){
+        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == mark){
             count++;
         }
-        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == this.enemyMark){
+        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == mark){
             count++;
         }
         return count;
+    }
+
+    private boolean potentialTakenHeuristics(char[][] boardMap, int[] tile){
+        int count = 0;
+        if (tile[0] != 0 && boardMap[tile[0]-1][tile[1]] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0]-1, tile[1]},this.selfMark);
+        }
+        if (tile[0] != 7 && boardMap[tile[0]+1][tile[1]] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0]+1, tile[1]},this.selfMark);
+        }
+        if (tile[1] != 0 && boardMap[tile[0]][tile[1]-1] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0], tile[1]-1},this.selfMark);
+        }
+        if (tile[1] != 7 && boardMap[tile[0]][tile[1]+1] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0], tile[1]+1},this.selfMark);
+        }
+        return count != 0;
     }
 }

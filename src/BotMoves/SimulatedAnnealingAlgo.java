@@ -23,23 +23,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         return point;
     }
 
-    private int countAdjacentEnemies(char[][] boardMap, int[] pos){
-        int count = 0;
-        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == this.enemyMark){
-            count++;
-        }
-        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == this.enemyMark){
-            count++;
-        }
-        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == this.enemyMark){
-            count++;
-        }
-        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == this.enemyMark){
-            count++;
-        }
-        return count;
-    }
-
     private char[][] duplicateBoardAndInsert(char[][] boardMap, int[] pos){
         // Duplicate
         char[][] newMap = new char[8][8];
@@ -50,7 +33,7 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         }
 
         // Insert
-        newMap[pos[0]][pos[1]] = 'O';
+        newMap[pos[0]][pos[1]] = this.selfMark;
         if (pos[0] != 0 && newMap[pos[0]-1][pos[1]] == this.enemyMark){
             newMap[pos[0]-1][pos[1]] = this.selfMark;
         }
@@ -74,7 +57,7 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         return currentMove;
     }
 
-    private double moveProbability(int valueDiff, double t){
+    private double moveProbability(double valueDiff, double t){
         if (valueDiff > 1){
 //            System.out.println("Optimal");
             return 1;
@@ -104,18 +87,22 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         this.selfMark = selfMark;
         this.enemyMark = enemyMark;
         int[] current = null;
-        int currentVal = calculateObjective(boardMap);
+        double currentVal = calculateObjective(boardMap);
         double temperature = 10;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
-            if (countAdjacentEnemies(boardMap, newPos) > 0){
+            if (countAdjacentOfMark(boardMap, newPos, this.enemyMark) > 0){
                 char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
-                int newVal = calculateObjective(newBoardMap);
+                double newVal = calculateObjective(newBoardMap);
+
+//                if (!potentialTakenHeuristics(boardMap, newPos)) {
+//                    newVal +=0.5;
+//                }
 
                 double prob = moveProbability(newVal-currentVal, temperature);
 
                 if (moveSuccess(prob)){
-                    System.out.println(newPos[0] + " " + newPos[1] + ", val: " + newVal);
+                    System.out.println("SA construct: "+ newPos[0] + " " + newPos[1] + ", val: " + newVal);
                     current = newPos;
                     currentVal = newVal;
                 }
@@ -123,5 +110,39 @@ public class SimulatedAnnealingAlgo implements Algorithm{
             temperature -= 0.1;
         }
         return current;
+    }
+
+    private int countAdjacentOfMark(char[][] boardMap, int[] pos, char mark){
+        int count = 0;
+        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == mark){
+            count++;
+        }
+        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == mark){
+            count++;
+        }
+        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == mark){
+            count++;
+        }
+        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == mark){
+            count++;
+        }
+        return count;
+    }
+
+    private boolean potentialTakenHeuristics(char[][] boardMap, int[] tile){
+        int count = 0;
+        if (tile[0] != 0 && boardMap[tile[0]-1][tile[1]] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0]-1, tile[1]},this.selfMark);
+        }
+        if (tile[0] != 7 && boardMap[tile[0]+1][tile[1]] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0]+1, tile[1]},this.selfMark);
+        }
+        if (tile[1] != 0 && boardMap[tile[0]][tile[1]-1] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0], tile[1]-1},this.selfMark);
+        }
+        if (tile[1] != 7 && boardMap[tile[0]][tile[1]+1] == ' '){
+            count += countAdjacentOfMark(boardMap, new int[] {tile[0], tile[1]+1},this.selfMark);
+        }
+        return count != 0;
     }
 }
