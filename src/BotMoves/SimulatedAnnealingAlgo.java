@@ -85,10 +85,14 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         this.selfMark = selfMark;
         this.enemyMark = enemyMark;
         int[] current = null;
+        int[] tempTile = null;
         double currentVal = calculateObjective(boardMap);
         double temperature = 10;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
+            if (countAdjacentOfMark(boardMap, newPos, this.enemyMark) == 0){
+                tempTile = newPos;
+            }
             if (countAdjacentOfMark(boardMap, newPos, this.enemyMark) > 0){
                 char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
                 double newVal = calculateObjective(newBoardMap);
@@ -107,7 +111,11 @@ public class SimulatedAnnealingAlgo implements Algorithm{
             }
             temperature -= 0.1;
         }
-        return current;
+        if (current == null){
+            return tempTile;
+        } else {
+            return current;
+        }
     }
 
     private int countAdjacentOfMark(char[][] boardMap, int[] pos, char mark){

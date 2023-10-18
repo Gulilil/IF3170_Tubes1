@@ -16,7 +16,11 @@ public class SidewaysMoveAlgo implements Algorithm{
 
         double maxVal = calculateObjective(boardMap);
         int[] resTile = null;
+        int[] tempTile = null;
         for (int[] tile: emptyArr) {
+            if (countAdjacentOfMark(boardMap, tile, this.enemyMark) == 0){
+                tempTile = tile;
+            }
             if (countAdjacentOfMark(boardMap, tile, this.enemyMark) > 0){
                 char[][] newBoard = duplicateBoardAndInsert(boardMap, tile);
                 double currentVal = calculateObjective(newBoard);
@@ -31,7 +35,11 @@ public class SidewaysMoveAlgo implements Algorithm{
                 }
             }
         }
-        return resTile;
+        if (resTile == null){
+            return tempTile;
+        } else {
+            return resTile;
+        }
     }
 
     @Override
