@@ -55,7 +55,7 @@ public class InputFrameController{
         ObservableList<String> algolist = FXCollections.observableArrayList(
                 "Human", "Bot Minimax Algo", "Bot Simulated Annealing", "Bot Sideways Move", "Bot Genetic Algo", "Bot Randomize Algo");
         ObservableList<Integer> delayTimeList = FXCollections.observableArrayList(
-                0, 250, 500, 1000, 1250, 1500);
+                0, 100, 250, 500, 750, 1000, 1250, 1500);
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
         this.algorithm1.setItems(algolist);
         this.algorithm2.setItems(algolist);
