@@ -65,15 +65,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
         }
     }
 
-    private void printBoardMap(char[][] boardMap){
-        for (char[] board: boardMap) {
-            for (char c : board){
-                System.out.print(c + " ");
-            }
-            System.out.println();
-        }
-    }
-
     private boolean moveSuccess(double probability){
         Random rd = new Random();
         double res = rd.nextDouble();
@@ -104,7 +95,7 @@ public class SimulatedAnnealingAlgo implements Algorithm{
                 double prob = moveProbability(newVal-currentVal, temperature);
 
                 if (moveSuccess(prob)){
-                    System.out.println("SA construct: "+ newPos[0] + " " + newPos[1] + ", val: " + newVal);
+//                    System.out.println("SA construct: "+ newPos[0] + " " + newPos[1] + ", val: " + newVal);
                     current = newPos;
                     currentVal = newVal;
                 }
