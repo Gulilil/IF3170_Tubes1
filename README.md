@@ -37,20 +37,20 @@ Here are the things needed to run the program:
 ```shell
 git clone https://github.com/Gulilil/IF3170_Tubes1.git
 ```
-2. Open this directory in IntellIJ IDEA as a new project 
-3. Edit the project structure in IntellIJ
+2. Download JavaFX and change JavaFX in the repository with the extracted JavaFX folder 
+3. Open this directory in IntellIJ IDEA as a new project 
+4. Edit the project structure in IntellIJ
 ` File > Project Structure `
-4. Go to Project Section in Project Settings, set the JDK version used in the program 
-5. Go to Libraries Section in Project Settings, add a library for the program to detect the JavaFX. 
-6. Back to the main screen, edit the run configuration of the project
+5. Go to Project Section in Project Settings, set the JDK version used in the program 
+6. Go to Libraries Section in Project Settings, add a library for the program to detect the JavaFX. 
+7. Back to the main screen, edit the run configuration of the project
 ` Run > Edit Configurations `
-7. Add this command on the VM option and the run setting to `Main` object
+8. Add this command on the VM option and the run setting to `Main` object
 ```shell
 --module-path {path to JavaFX} --add-modules=javafx.controls,javafx.fxml
 ```
-8. Run the program
+9. Run the program
 
-p.s. : If an error occurs regarding the JavaFX, try to manually download the JavaFX and then direct the path into the download JavaFX (not to the one in this repository).
 
 ## **Implementation Screenshot**
 ### User Input Screen
