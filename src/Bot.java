@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class Bot {
     private final Algorithm typeMove;
-    private char selfMark;
-    private char enemyMark;
+    private final char selfMark;
+    private final char enemyMark;
 
     // Type Move List:
     // 1 : moveRandomize
@@ -19,8 +19,10 @@ public class Bot {
         if (moveOption == 1){
             this.typeMove = new MiniMaxABAlgo();
         } else if (moveOption == 2){
-            this.typeMove = new LocalSearchAlgo();
+            this.typeMove = new SimulatedAnnealingAlgo();
         } else if (moveOption == 3){
+          this.typeMove = new SidewaysMoveAlgo();
+        } else if (moveOption == 4){
             this.typeMove = new GASearchAlgo();
         } else {
             this.typeMove = new RandomizeAlgo();

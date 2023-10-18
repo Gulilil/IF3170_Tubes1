@@ -12,6 +12,7 @@ import java.util.Comparator;
 public class MiniMaxABAlgo implements Algorithm{
 
     private Tree root;
+
     private char selfMark;
     private char enemyMark;
     private int maxDepth;
@@ -26,6 +27,7 @@ public class MiniMaxABAlgo implements Algorithm{
         return false;
     }
 
+    @Override
     public int calculateObjective(char[][] boardMap){
         int point = 0;
         for (int i = 0; i < 8; i++) {

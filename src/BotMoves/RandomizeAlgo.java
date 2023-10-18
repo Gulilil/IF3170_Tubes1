@@ -12,4 +12,9 @@ public class RandomizeAlgo implements Algorithm{
         }
         return currentMove;
     }
+
+    @Override
+    public int calculateObjective(char[][] boardMap) {
+        return 0;
+    }
 }
