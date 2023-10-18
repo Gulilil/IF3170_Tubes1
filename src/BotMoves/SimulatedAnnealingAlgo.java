@@ -5,41 +5,42 @@ import java.util.Random;
 
 public class SimulatedAnnealingAlgo implements Algorithm{
 
-    private int checkBoardValue(char[][] boardMap, char selfMark){
-        int countSelf = 0;
-        int countEnemy = 0;
-        for (char[] rows : boardMap) {
-            for (char tile : rows){
-                if (tile != ' '){
-                    if (tile == selfMark){
-                        countSelf++;
-                    } else {
-                        countEnemy++;
-                    }
+    private char selfMark;
+    private char enemyMark;
+
+    @Override
+    public int calculateObjective(char[][] boardMap){
+        int point = 0;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (boardMap[i][j] == this.selfMark) {
+                    point++;
+                } else if (boardMap[i][j] == this.enemyMark) {
+                    point--;
                 }
             }
         }
-        return countSelf - countEnemy;
+        return point;
     }
 
-    private int countAdjacentEnemies(char[][] boardMap, int[] pos, char enemyMark){
+    private int countAdjacentEnemies(char[][] boardMap, int[] pos){
         int count = 0;
-        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == enemyMark){
+        if (pos[0] != 0 && boardMap[pos[0]-1][pos[1]] == this.enemyMark){
             count++;
         }
-        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == enemyMark){
+        if (pos[0] != 7 && boardMap[pos[0]+1][pos[1]] == this.enemyMark){
             count++;
         }
-        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == enemyMark){
+        if (pos[1] != 0 && boardMap[pos[0]][pos[1]-1] == this.enemyMark){
             count++;
         }
-        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == enemyMark){
+        if (pos[1] != 7 && boardMap[pos[0]][pos[1]+1] == this.enemyMark){
             count++;
         }
         return count;
     }
 
-    private char[][] duplicateBoardAndInsert(char[][] boardMap, int[] pos, char selfMark, char enemyMark){
+    private char[][] duplicateBoardAndInsert(char[][] boardMap, int[] pos){
         // Duplicate
         char[][] newMap = new char[8][8];
         for (int i = 0; i < 8; i++){
@@ -50,17 +51,17 @@ public class SimulatedAnnealingAlgo implements Algorithm{
 
         // Insert
         newMap[pos[0]][pos[1]] = 'O';
-        if (pos[0] != 0 && newMap[pos[0]-1][pos[1]] == enemyMark){
-            newMap[pos[0]-1][pos[1]] = selfMark;
+        if (pos[0] != 0 && newMap[pos[0]-1][pos[1]] == this.enemyMark){
+            newMap[pos[0]-1][pos[1]] = this.selfMark;
         }
-        if (pos[0] != 7 && newMap[pos[0]+1][pos[1]] == enemyMark){
-            newMap[pos[0]+1][pos[1]] = selfMark;
+        if (pos[0] != 7 && newMap[pos[0]+1][pos[1]] == this.enemyMark){
+            newMap[pos[0]+1][pos[1]] = this.selfMark;
         }
-        if (pos[1] != 0 && newMap[pos[0]][pos[1]-1] == enemyMark){
-            newMap[pos[0]][pos[1]-1] = selfMark;
+        if (pos[1] != 0 && newMap[pos[0]][pos[1]-1] == this.enemyMark){
+            newMap[pos[0]][pos[1]-1] = this.selfMark;
         }
-        if (pos[1] != 7 && newMap[pos[0]][pos[1]+1] == enemyMark){
-            newMap[pos[0]][pos[1]+1] = selfMark;
+        if (pos[1] != 7 && newMap[pos[0]][pos[1]+1] == this.enemyMark){
+            newMap[pos[0]][pos[1]+1] = this.selfMark;
         }
         return newMap;
     }
@@ -92,22 +93,24 @@ public class SimulatedAnnealingAlgo implements Algorithm{
     }
 
     private boolean moveSuccess(double probability){
-        System.out.println(probability);
+//        System.out.println(probability);
         Random rd = new Random();
         double res = rd.nextDouble();
-        return res == 1.0 || res < probability;
+        return res < probability;
     }
 
     @Override
     public int[] move(char[][] boardMap, int roundLeft, char selfMark, char enemyMark) {
+        this.selfMark = selfMark;
+        this.enemyMark = enemyMark;
         int[] current = null;
-        int currentVal = checkBoardValue(boardMap, selfMark);
+        int currentVal = calculateObjective(boardMap);
         double temperature = 10;
         while (temperature > 0){
             int[] newPos = generateRandom(boardMap);
-            if (countAdjacentEnemies(boardMap, newPos, enemyMark) > 0){
-                char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos, selfMark, enemyMark);
-                int newVal = checkBoardValue(newBoardMap, selfMark);
+            if (countAdjacentEnemies(boardMap, newPos) > 0){
+                char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
+                int newVal = calculateObjective(newBoardMap);
 
                 double prob = moveProbability(newVal-currentVal, temperature);
 

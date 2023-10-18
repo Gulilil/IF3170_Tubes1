@@ -50,10 +50,10 @@ public class InputFrameController{
     @FXML
     private void initialize(){
         ObservableList<String> numberOfRoundsDropdown = FXCollections.observableArrayList(
-                "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+                "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
         ObservableList<String> algolist = FXCollections.observableArrayList(
-                "Human", "Bot Minimax Algo", "Bot Simulated Annealing", "Bot Genetic Algo", "Bot Randomize Algo");
+                "Human", "Bot Minimax Algo", "Bot Simulated Annealing", "Bot Sideways Move", "Bot Genetic Algo", "Bot Randomize Algo");
         ObservableList<Integer> delayTimeList = FXCollections.observableArrayList(
                 0, 250, 500, 1000, 1250, 1500);
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
@@ -63,7 +63,7 @@ public class InputFrameController{
 
         this.player1.setText("Player X");
         this.player2.setText("Player O");
-        this.numberOfRounds.getSelectionModel().select(7);
+        this.numberOfRounds.getSelectionModel().select(6);
         this.algorithm1.getSelectionModel().select(0);
         this.algorithm2.getSelectionModel().select(0);
         this.delay.getSelectionModel().select(0);

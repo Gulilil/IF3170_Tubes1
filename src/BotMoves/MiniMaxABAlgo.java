@@ -1,25 +1,19 @@
 package BotMoves;
 
-import javafx.scene.control.Button;
+//import javafx.scene.control.Button;
 import DataStructure.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class MiniMaxABAlgo implements Algorithm{
     private Tree root;
 
-    private boolean checkEndOfGame(Button[][] boardMap){
-        int emptyTile = 0;
-        for(Button[] rowButtons : boardMap){
-            for (Button tile : rowButtons){
-                if (tile.getText().equals("")){
-                    emptyTile++;
-                }
-            }
-        }
-        return emptyTile == 0;
-    }
+    private char selfMark;
+    private char enemyMark;
+
     public boolean isValid(int x, int y){
         if(x >= 0 && x < 8 && y>= 0 && y < 8){
             return true;
@@ -29,38 +23,39 @@ public class MiniMaxABAlgo implements Algorithm{
     public boolean isAdjacent(char[][] boardMap, int x, int y, boolean isBot){
 //        Cek apakah sebuah point memiliki tetangga
         if(isValid(x-1,y)){
-            if (boardMap[x-1][y] == (isBot ? 'X' : 'O')) {
+            if (boardMap[x-1][y] == (isBot ? this.enemyMark : this.selfMark)) {
                 return true;
             }
         }
 
         if(isValid(x,y-1)){
-            if (boardMap[x][y-1] == (isBot ? 'X' : 'O')) {
+            if (boardMap[x][y-1] == (isBot ? this.enemyMark : this.selfMark)) {
                 return true;
             }
         }
 
         if(isValid(x+1,y)){
-            if (boardMap[x+1][y] == (isBot ? 'X' : 'O')) {
+            if (boardMap[x+1][y] == (isBot ? this.enemyMark : this.selfMark)) {
                 return true;
             }
         }
 
         if(isValid(x,y+1)){
-            if (boardMap[x][y+1] == (isBot ? 'X' : 'O')) {
+            if (boardMap[x][y+1] == (isBot ? this.enemyMark : this.selfMark)) {
                 return true;
             }
         }
         return false;
     };
 
+    @Override
     public int calculateObjective(char[][] boardMap){
         int point = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (boardMap[i][j] == 'O') {
+                if (boardMap[i][j] == this.selfMark) {
                     point++;
-                } else if (boardMap[i][j] == 'X') {
+                } else if (boardMap[i][j] == this.enemyMark) {
                     point--;
                 }
             }
@@ -79,11 +74,50 @@ public class MiniMaxABAlgo implements Algorithm{
         }
         return point;
     }
-
+    public ArrayList<PointValue> searchPointValue(char[][] boardMap,boolean isBot, ArrayList<int[]>allAdjacent){
+        ArrayList<PointValue>result =new ArrayList<PointValue>();
+        for(int[] point : allAdjacent){
+            int value = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
+            result.add(new PointValue(point[0],point[1],value));
+        }
+//        System.out.println("=========Belum di sort ===========");
+//        for (PointValue pv : result){
+//            pv.display();
+//        }
+//        result.sort(Comparator.comparing(PointValue::getPointValue).reversed());
+//        System.out.println("=========Setelah di sort ===========");
+//        for (PointValue pv : result){
+//            pv.display();
+//        }
+        return result;
+    }
+    public int searchTotalAdjacent(char[][] boardMap,boolean isBot ,Point point){
+        char enemy = this.enemyMark;
+        if(!isBot){
+            enemy = this.selfMark;
+        }
+        int total = 0;
+        int x = point.x;
+        int y = point.y;
+        if(isValid(x-1,y)&&boardMap[x-1][y] == enemy){
+            total += 1;
+        }
+        if(isValid(x,y-1) && boardMap[x][y-1] == enemy){
+            total += 1;
+        }
+        if(isValid(x+1,y) && boardMap[x+1][y] == enemy){
+            total += 1;
+        }
+        if(isValid(x,y+1)&&boardMap[x][y+1] == enemy){
+            total +=1;
+        }
+        return total;
+    }
     @Override
     public int[] move(char[][] boardMap, int roundLeft, char selfMark, char enemyMark) {
         this.root = new Tree(boardMap);
-
+        this.selfMark = selfMark;
+        this.enemyMark = enemyMark;
         Point next = new Point();
 
         processTree(boardMap, true, 0, roundLeft * 2, -999, 999, next);
@@ -93,9 +127,11 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     public int processTree(char[][] boardMap, boolean isBot, int depth, int leftround, int alpha, int beta, Point selectedPoint) {
-        if (leftround > 0) {
+        if (leftround > 0 && depth<=2) {
             ArrayList<int[]> potentialPoint = searchAdjacent(boardMap, isBot);
+            ArrayList<PointValue> testing = searchPointValue(boardMap,isBot,potentialPoint);
             for (int[] point: potentialPoint) {
+                int total_neighbor = searchTotalAdjacent(boardMap,isBot,new Point(point[0],point[1]));
                 char [][] state = new char[8][];
                 for(int i = 0; i < 8; i++) {
                     state[i] = boardMap[i].clone();
@@ -133,11 +169,11 @@ public class MiniMaxABAlgo implements Algorithm{
                     }
                 }
             }
-//            for (int p = 0; p < depth; p++) {
-//                System.out.print("  ");
-//            }
-//            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
-//            System.out.println(isBot ? alpha : beta);
+            for (int p = 0; p < depth; p++) {
+                System.out.print("  ");
+            }
+            System.out.print(selectedPoint.x + " " + selectedPoint.y + "=>");
+            System.out.println(isBot ? alpha : beta);
             return isBot ? alpha : beta;
         } else { //
 //            for (int p = 0; p < depth; p++) {
@@ -150,21 +186,21 @@ public class MiniMaxABAlgo implements Algorithm{
     }
 
     private void changeState(char[][] state, boolean isBot, int x, int y) {
-        state[x][y] = isBot ? 'O' : 'X';
+        state[x][y] = isBot ? this.selfMark : this.enemyMark;
         if(isValid(x-1,y)){
-            state[x-1][y] = isBot && state[x-1][y] == 'X' ? 'O' : !isBot && state[x-1][y] == 'O' ? 'X' : state[x-1][y];
+            state[x-1][y] = isBot && state[x-1][y] == this.enemyMark ? this.selfMark : !isBot && state[x-1][y] == this.selfMark ?this.enemyMark : state[x-1][y];
         }
 
         if(isValid(x,y-1)){
-            state[x][y-1] = isBot && state[x][y-1] == 'X' ? 'O' : !isBot && state[x][y-1] == 'O' ? 'X' : state[x][y-1];
+            state[x][y-1] = isBot && state[x][y-1] == this.enemyMark ? this.selfMark : !isBot && state[x][y-1] == this.selfMark ? this.enemyMark : state[x][y-1];
         }
 
         if(isValid(x+1,y)){
-            state[x+1][y] = isBot && state[x+1][y] == 'X' ? 'O' : !isBot && state[x+1][y] == 'O' ? 'X' : state[x+1][y];
+            state[x+1][y] = isBot && state[x+1][y] == this.enemyMark ? this.selfMark : !isBot && state[x+1][y] == this.selfMark ? this.enemyMark : state[x+1][y];
         }
 
         if(isValid(x,y+1)){
-            state[x][y+1] = isBot && state[x][y+1] == 'X' ? 'O' : !isBot && state[x][y+1] == 'O' ? 'X' : state[x][y+1];
+            state[x][y+1] = isBot && state[x][y+1] == this.enemyMark ? this.selfMark : !isBot && state[x][y+1] == this.selfMark ? this.enemyMark : state[x][y+1];
         }
     }
 

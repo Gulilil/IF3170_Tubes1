@@ -21,8 +21,8 @@ public class Bot {
         } else if (moveOption == 2){
             this.typeMove = new SimulatedAnnealingAlgo();
         } else if (moveOption == 3){
-          this.typeMove = new SteepestAscentAlgo();
-        } else if (moveOption == 3){
+          this.typeMove = new SidewaysMoveAlgo();
+        } else if (moveOption == 4){
             this.typeMove = new GASearchAlgo();
         } else {
             this.typeMove = new RandomizeAlgo();

@@ -7,4 +7,9 @@ public class GASearchAlgo implements Algorithm{
     public int[] move(char[][] boardMap, int roundLeft, char selfMark, char enemyMark) {
         return new int[] {1,1};
     }
+
+    @Override
+    public int calculateObjective(char[][] boardMap) {
+        return 0;
+    }
 }

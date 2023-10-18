@@ -1,7 +1,3 @@
-import BotMoves.GASearchAlgo;
-import BotMoves.LocalSearchAlgo;
-import BotMoves.MiniMaxABAlgo;
-import BotMoves.RandomizeAlgo;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -64,7 +60,7 @@ public class OutputFrameController {
 
     private static final int ROW = 8;
     private static final int COL = 8;
-    private Button[][] buttons = new Button[ROW][COL];
+    private final Button[][] buttons = new Button[ROW][COL];
 
 
     /**
@@ -87,15 +83,18 @@ public class OutputFrameController {
 
         // List : "Human", "Bot Minimax", "Bot Simulated Annealing", "Bot Genetic", "Bot Randomize"
         if (!algorithm1.equals("Human")){
-            int optionBot1 = 0;
+            int optionBot1;
+
             if (algorithm1.equals("Bot Minimax Algo")) {
                 optionBot1 = 1;
             } else if (algorithm1.equals("Bot Simulated Annealing")) {
                 optionBot1 = 2;
-            } else if (algorithm1.equals("Bot Genetic Algo")) {
+            } else if (algorithm1.equals("Bot Sideways Move")) {
                 optionBot1 = 3;
-            } else {
+            } else if (algorithm1.equals("Bot Genetic Algo")) {
                 optionBot1 = 4;
+            } else {
+                optionBot1 = 5;
             }
             this.botX = new Bot(optionBot1, 'X', 'O');
         } else {
@@ -103,15 +102,17 @@ public class OutputFrameController {
         }
 
         if (!algorithm2.equals("Human")){
-            int optionBot2 = 0;
+            int optionBot2;
             if (algorithm2.equals("Bot Minimax Algo")) {
                 optionBot2 = 1;
             } else if (algorithm2.equals("Bot Simulated Annealing")) {
                 optionBot2 = 2;
-            } else if (algorithm2.equals("Bot Genetic Algo")) {
+            } else if (algorithm2.equals("Bot Sideways Move")) {
                 optionBot2 = 3;
-            } else {
+            } else if (algorithm2.equals("Bot Genetic Algo")) {
                 optionBot2 = 4;
+            }  else {
+                optionBot2 = 5;
             }
             this.botO = new Bot(optionBot2, 'O', 'X');
         } else {
@@ -194,8 +195,14 @@ public class OutputFrameController {
 
 
         // Initialize turn and score for the game.
-        this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
-        this.playerOBoxPane.setStyle("-fx-background-color: white; -fx-border-color: #D3D3D3;");
+        if (playerXTurn){
+            this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+            this.playerOBoxPane.setStyle("-fx-background-color: white; -fx-border-color: #D3D3D3;");
+        } else {
+            this.playerXBoxPane.setStyle("-fx-background-color: white; -fx-border-color: #D3D3D3;");
+            this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+        }
+
         this.playerXScoreLabel.setText("4");
         this.playerOScoreLabel.setText("4");
 
