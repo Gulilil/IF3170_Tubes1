@@ -315,8 +315,4 @@ public class GASearchAlgo implements Algorithm{
         System.out.println();
     }
 
-    @Override
-    public int calculateObjective(char[][] boardMap) {
-        return 0;
-    }
 }
