@@ -31,40 +31,40 @@ public class GASearchAlgo implements Algorithm{
     public int[] getParent(ArrayList<int[]> emptyCell, int roundsLeft) {
         int[] parent = new int[roundsLeft];
         int length = emptyCell.size();
+
+        ArrayList<Integer> idxleft = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            idxleft.add(i);
+        }
+        System.out.println("HEKKI" + idxleft.size());
         for (int i = 0; i < roundsLeft; i++) {
-            boolean retry = true;
-            int selected = -1;
-            while (retry) {
-                selected = (int) (Math.random()*length);
-                retry = false;
-                for (int j = 0; j < i; j++) {
-                    if (parent[j] == selected) {
-                        retry = true;
-                        break;
-                    }
-                }
-            }
+            int idxselected = (int) (Math.random()*idxleft.size());
+            System.out.println(idxleft.size() + " " + idxselected);
+            int selected = idxleft.get(idxselected);
+            idxleft.remove(idxselected);
             parent[i] = selected;
         }
         return parent;
     }
 
     public void crossover(ArrayList<int[]> emptyCell, int roundsLeft, int[] parent1, int[] parent2) {
-        int crossoverpoint = (int) (Math.random()*roundsLeft);
-        while (crossoverpoint == 0) {
-            crossoverpoint = (int) (Math.random()*roundsLeft);
-        }
+        if (roundsLeft > 1) {
+            int crossoverpoint = (int) (Math.random()*roundsLeft);
+            while (crossoverpoint == 0) {
+                crossoverpoint = (int) (Math.random()*roundsLeft);
+            }
 
-        ArrayList<Integer> buffer = new ArrayList<Integer>();
+            ArrayList<Integer> buffer = new ArrayList<Integer>();
 
-        System.out.println("Crossover point : " + crossoverpoint);
-        for (int i = crossoverpoint; i < roundsLeft; i++) {
-            buffer.add(parent1[i]);
-            parent1[i] = parent2[i];
-        }
+            System.out.println("Crossover point : " + crossoverpoint);
+            for (int i = crossoverpoint; i < roundsLeft; i++) {
+                buffer.add(parent1[i]);
+                parent1[i] = parent2[i];
+            }
 
-        for (int i = crossoverpoint; i < roundsLeft; i++) {
-            parent2[i] = buffer.get(i-crossoverpoint);
+            for (int i = crossoverpoint; i < roundsLeft; i++) {
+                parent2[i] = buffer.get(i-crossoverpoint);
+            }
         }
     }
 
@@ -103,56 +103,49 @@ public class GASearchAlgo implements Algorithm{
     }
 
     private void mutateGene(int length, int[] gene, ArrayList<Integer> mutationpoint, int roundsLeft) {
+        ArrayList<Integer> idxleft = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            idxleft.add(i);
+        }
         if (mutationpoint.isEmpty()) {
             int point = (int) (Math.random()*roundsLeft);
             System.out.println("Mutation point: " + point);
-            boolean retry = true;
-            int selected = -1;
-            while (retry) {
-                selected = (int) (Math.random()*length);
-                retry = false;
-                for (int j = 0; j < roundsLeft; j++) {
-                    if (gene[j] == selected) {
-                        retry = true;
-                        break;
-                    }
-                }
-            }
+            int idxselected = (int) (Math.random()*idxleft.size());
+            int selected = idxleft.get(idxselected);
+            idxleft.remove(idxselected);
             gene[point] = selected;
         } else {
             for (int i = 0; i < mutationpoint.size(); i++) {
                 System.out.println("Mutation point: " + mutationpoint.get(i));
-                boolean retry = true;
-                int selected = -1;
-                while (retry) {
-                    selected = (int) (Math.random()*length);
-                    retry = false;
-                    for (int j = 0; j < roundsLeft; j++) {
-                        if (gene[j] == selected) {
-                            retry = true;
-                            break;
-                        }
-                    }
-                }
+                int idxselected = (int) (Math.random()*idxleft.size());
+                int selected = idxleft.get(idxselected);
+                idxleft.remove(idxselected);
                 gene[mutationpoint.get(i)] = selected;
             }
         }
     }
 
     private void heuristicFirst(ArrayList<int[]> emptyCell, int[] gene) {
-        while (!isAdjacent(this.map, emptyCell.get(gene[0])[0], emptyCell.get(gene[0])[1], true)) {
-            boolean retry = true;
-            int selected = -1;
-            while (retry) {
-                selected = (int) (Math.random() * emptyCell.size());
-                retry = false;
+        ArrayList<Integer> point = new ArrayList<>();
+        for (int i = 0; i< emptyCell.size(); i++) {
+            if (isAdjacent(this.map, emptyCell.get(i)[0], emptyCell.get(i)[1], true)) {
+                boolean found = false;
                 for (int j = 0; j < gene.length; j++) {
-                    if (gene[j] == selected) {
-                        retry = true;
+                    if (gene[j] == i) {
+                        found = true;
                         break;
                     }
                 }
+                if (!found) {
+                    point.add(i);
+                }
             }
+        }
+
+        System.out.println("hehe");
+        if (!isAdjacent(this.map, emptyCell.get(gene[0])[0], emptyCell.get(gene[0])[1], true) && !point.isEmpty()) {
+            int idx = (int) (Math.random() * point.size());
+            int selected = point.get(idx);
             gene[0] = selected;
         }
     }
@@ -251,7 +244,9 @@ public class GASearchAlgo implements Algorithm{
         int[] gene1, gene2, selectedgene = new int[0];
         boolean retry = true;
         int i = 0;
+        System.out.println("belum");
         while (retry) {
+            System.out.println("mau nyari parent");
             gene1 = getParent(emptyCell, roundsLeft);
             gene2 = getParent(emptyCell, roundsLeft);
             printGeneStatus(emptyCell, roundsLeft, gene1, gene2);
@@ -289,12 +284,13 @@ public class GASearchAlgo implements Algorithm{
 
     @Override
     public int[] move(char[][] boardMap, int roundLeft, char selfMark, char enemyMark) {
+        System.out.println("mulai");
         initializeMap(boardMap);
         ArrayList<int[]> emptyCell = this.getEmpty();
         this.selfMark = selfMark;
         this.enemyMark = enemyMark;
 
-        return geneticAlgorithm(emptyCell, roundLeft * 2);
+        return geneticAlgorithm(emptyCell, emptyCell.size() % 2 == 0 ? roundLeft * 2 : roundLeft * 2 - 1);
     }
 
     public void printGeneStatus(ArrayList<int[]> emptyCell, int roundsLeft, int[] parent1, int[] parent2) {
@@ -315,8 +311,4 @@ public class GASearchAlgo implements Algorithm{
         System.out.println();
     }
 
-    @Override
-    public int calculateObjective(char[][] boardMap) {
-        return 0;
-    }
 }
