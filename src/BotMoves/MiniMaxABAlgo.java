@@ -9,23 +9,6 @@ import java.util.ArrayList;
 public class MiniMaxABAlgo implements Algorithm{
     private Tree root;
 
-    private int checkBoardValue(Button[][] boardMap){
-        int countX = 0;
-        int countO = 0;
-        for (Button[] rowButtons : boardMap) {
-            for (Button tile : rowButtons){
-                if (!tile.getText().equals("")){
-                    if (tile.getText().equals("O")){
-                        countO++;
-                    } else {
-                        countX++;
-                    }
-                }
-            }
-        }
-        return countO - countX;
-    }
-
     private boolean checkEndOfGame(Button[][] boardMap){
         int emptyTile = 0;
         for(Button[] rowButtons : boardMap){

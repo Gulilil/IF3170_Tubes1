@@ -3,7 +3,7 @@ package BotMoves;
 import java.lang.*;
 import java.util.Random;
 
-public class LocalSearchAlgo implements Algorithm{
+public class SimulatedAnnealingAlgo implements Algorithm{
 
     private int checkBoardValue(char[][] boardMap, char selfMark){
         int countSelf = 0;
