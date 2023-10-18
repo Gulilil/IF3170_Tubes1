@@ -169,6 +169,9 @@ public class MiniMaxABAlgo implements Algorithm{
                         selectedPoint.setLocation(pointValue.getPoint().x,pointValue.getPoint().y);
                     }
                 }
+                if(beta<=alpha){
+                    break;
+                }
             }
             return isBot ? alpha : beta;
 
