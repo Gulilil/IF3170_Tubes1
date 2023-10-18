@@ -10,36 +10,10 @@ import java.util.Comparator;
 
 public class MiniMaxABAlgo implements Algorithm{
     private Tree root;
+
     private char selfMark;
     private char enemyMark;
-//    private int checkBoardValue(Button[][] boardMap){
-//        int countX = 0;
-//        int countO = 0;
-//        for (Button[] rowButtons : boardMap) {
-//            for (Button tile : rowButtons){
-//                if (!tile.getText().equals("")){
-//                    if (tile.getText().equals("O")){
-//                        countO++;
-//                    } else {
-//                        countX++;
-//                    }
-//                }
-//            }
-//        }
-//        return countO - countX;
-//    }
-//
-//    private boolean checkEndOfGame(Button[][] boardMap){
-//        int emptyTile = 0;
-//        for(Button[] rowButtons : boardMap){
-//            for (Button tile : rowButtons){
-//                if (tile.getText().equals("")){
-//                    emptyTile++;
-//                }
-//            }
-//        }
-//        return emptyTile == 0;
-//    }
+
     public boolean isValid(int x, int y){
         if(x >= 0 && x < 8 && y>= 0 && y < 8){
             return true;
@@ -74,6 +48,7 @@ public class MiniMaxABAlgo implements Algorithm{
         return false;
     };
 
+    @Override
     public int calculateObjective(char[][] boardMap){
         int point = 0;
         for (int i = 0; i < 8; i++) {
