@@ -21,9 +21,9 @@ public class SidewaysMoveAlgo implements Algorithm{
                 char[][] newBoard = duplicateBoardAndInsert(boardMap, tile);
                 double currentVal = calculateObjective(newBoard);
 
-//                if (!potentialTakenHeuristics(boardMap, tile)){
-//                    currentVal += 0.5;
-//                }
+                if (!potentialTakenHeuristics(boardMap, tile)){
+                    currentVal += 0.5;
+                }
                 if (currentVal >= maxVal){
                     System.out.println("SM construct: " + tile[0] + " " + tile[1] + ", Val: " + currentVal);
                     resTile = tile;

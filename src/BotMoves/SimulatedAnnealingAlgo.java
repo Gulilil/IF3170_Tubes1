@@ -59,7 +59,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
 
     private double moveProbability(double valueDiff, double t){
         if (valueDiff > 1){
-//            System.out.println("Optimal");
             return 1;
         } else {
             return Math.exp( (double) (valueDiff-1)/  t);
@@ -76,7 +75,6 @@ public class SimulatedAnnealingAlgo implements Algorithm{
     }
 
     private boolean moveSuccess(double probability){
-//        System.out.println(probability);
         Random rd = new Random();
         double res = rd.nextDouble();
         return res < probability;
@@ -95,9 +93,9 @@ public class SimulatedAnnealingAlgo implements Algorithm{
                 char[][] newBoardMap = duplicateBoardAndInsert(boardMap, newPos);
                 double newVal = calculateObjective(newBoardMap);
 
-//                if (!potentialTakenHeuristics(boardMap, newPos)) {
-//                    newVal +=0.5;
-//                }
+                if (!potentialTakenHeuristics(boardMap, newPos)) {
+                    newVal +=0.5;
+                }
 
                 double prob = moveProbability(newVal-currentVal, temperature);
 
