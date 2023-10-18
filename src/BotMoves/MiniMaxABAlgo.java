@@ -46,16 +46,26 @@ public class MiniMaxABAlgo implements Algorithm{
     public ArrayList<PointValue> searchAdjacent(char[][] boardMap, boolean isBot) {
         ArrayList<int[]> point = new ArrayList<int[]>();
         ArrayList<PointValue> pointValues = new ArrayList<PointValue>();
+        PointValue edge = null;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int totalAdj = searchTotalAdjacent(boardMap,isBot,new Point(i,j));
                 int totalDia = searchDiagonal(boardMap, isBot, new Point(i,j));
                 int val = 2*totalAdj - totalDia ;
 //                Memastikan bahwa boardMap[i][j] kosong dan memiliki tetangga berupa musuh
-                if (boardMap[i][j] == ' ' && totalAdj > 0) {
-                    pointValues.add(new PointValue(i,j,val));
+                if (boardMap[i][j] == ' '){
+                    if(totalAdj > 0) {
+                        pointValues.add(new PointValue(i, j, val));
+                    }else if (edge==null){ //edge case
+                        edge= new PointValue(i,j,val);
+                    }
                 }
             }
+        }
+
+        // edge case
+        if(pointValues.isEmpty() && edge!=null){
+            pointValues.add(edge);
         }
         pointValues.sort(Comparator.comparing(PointValue::getPointValue).reversed());
         return pointValues;
