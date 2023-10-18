@@ -42,7 +42,6 @@ public class Bot {
                 }
             }
         }
-        System.out.println("Ini bot move");
         return this.typeMove.move(board, roundLeft, this.selfMark, this.enemyMark);
     }
 
